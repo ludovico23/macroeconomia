@@ -1,12 +1,12 @@
 ---
-title: "AAAnalisis de principales variables macroeconimcas de 1990 al 2019"
+title: "Analisis de principales variables macroeconimicas de 1990 al 2019"
 author: "Luis Miguel Meza Ramos"
 date: "9/4/2021"
 output:
   html_document: default
   pdf_document: default
 ---
-modificado 
+
 
 ## Introducción
 El presente trabajo tiene como objetivo principal, encontrar relaciones historicas en años pasados de los diferentes paises para si poder prever el futuro. 
