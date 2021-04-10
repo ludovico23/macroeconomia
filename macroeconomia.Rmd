@@ -1,0 +1,29 @@
+---
+title: "Analisis de principales variables macroeconimcas de 1990 al 2019"
+author: "Luis Miguel Meza Ramos"
+date: "9/4/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+## Introducción
+El presente trabajo tiene como objetivo principal, encontrar relaciones historicas en años pasados de los diferentes paises para si poder prever el futuro. 
+Parte de la premisa: "Si no conocemos la historia estamos condenados a repetirla" y; también busca evaluar historicamente que tanto avanzo el país, ya que comprendiendo el paso es como podremos saber si los diferentes gobiernos de turno fueron eficaces o no en sus medidas tomadas durante su gestión. 
+
+## Metodo
+Se utilizaran las siguientes técnicas para el analisis.
+
+1. Estadistica descriptiva
+2. Analisis de componentes principales (ACP)
+3. Analisis de cluster (AC)
+4. Escalamiento multidimensional
+
+## Resultado
+
+## Discusión
+
+## Referencias
+
+International Labour Organization. (s. f.). International Labour Organization. https://ilostat.ilo.org. Recuperado 9 de abril de 2021, de https://ilostat.ilo.org/data/
