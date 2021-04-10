@@ -27,6 +27,9 @@ Se utilizaran las siguientes técnicas para el analisis.
 ## Referencias
 ```{r}
 mtcars
+library("ggplot2")
+ggplot(mtcars, mapping = aes(mpg, hp))+
+  geom_point()
 ```
 
 
