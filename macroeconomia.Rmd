@@ -1,5 +1,5 @@
 ---
-title: "Analisis de principales variables macroeconimicas de 1990 al 2019"
+title: "Anñalisis de principales variables macroeconómicas de 1990 al 2019 para países de América Latina"
 author: "Luis Miguel Meza Ramos"
 date: "9/4/2021"
 output:
@@ -9,14 +9,136 @@ output:
 
 
 ## Introducción
-El presente trabajo tiene como objetivo principal, encontrar relaciones historicas en años pasados de los diferentes paises para si poder prever el futuro. 
-Parte de la premisa: "Si no conocemos la historia estamos condenados a repetirla" y; también busca evaluar historicamente que tanto avanzo el país, ya que comprendiendo el paso es como podremos saber si los diferentes gobiernos de turno fueron eficaces o no en sus medidas tomadas durante su gestión. 
+El presente trabajo tiene como objetivo principal, encontrar relaciones históricas de años pasados de los diferentes países para así poder prever el futuro. 
+Parte de la siguiente premisa: "Si no conocemos la historia, estamos condenados a repetirla" y; también busca evaluar historicamente que tanto avanzo el país, ya que comprendiendo lo que sucedio, es como podemos saber si los diferentes gobiernos de turno fueron eficaces o no en sus medidas tomadas durante su gestión. 
 
 ## Metodo
-Se utilizaran las siguientes técnicas para el analisis.
+Se utilizaran las siguientes técnicas para el análisis.
 
 1. Estadistica descriptiva
+Cargando la base de datos.
+
+```{r}
+library(tidyverse)
+library(psych)
+
+desempleo = read.csv("E:/Proyectos R/macroecoomia/desempleo.csv")
+desempleo_of = gather(desempleo, periodo, tasa_desempleo, c("X1990":"X2019"))
+dim(desempleo)
+str(desempleo)
+desempleo_of$tasa_desempleo = as.numeric(desempleo_of$tasa_desempleo)
+
+desempleo_num = spread(desempleo_of, periodo, tasa_desempleo)
+desempleo_num = na.omit(desempleo_num)
+
+```
+
+A contunuación procedemos a extraer la media de cada país.
+
+```{r}
+rowMeans(desempleo_num[,4:33])
+
+```
+
 2. Analisis de componentes principales (ACP)
+
+A continuación se procede a realizar el analisis de componentes principales para el periodo anual de 1990 a 1999. Como primer paso se verificara si es factible llevar a cabo un ACP y, para ello utilizamos el test de KMO. 
+Si KMO es mayor a 0 
+
+```{r}
+KMO(desempleo_num[c(4:13)])
+
+```
+Tambien utilizaremos el test de esfericidad de barlet. 
+```{r}
+bartlett.test(desempleo_num[c(4:13)])
+```
+
+Apreciamos del test de KMO y de la prueba de esfericidad de barlet, confirman si es factible realizar un analisis de componentes principales.
+
+A continuación procedemos a ejecutar el ACP en R. 
+```{r}
+acp = prcomp(desempleo_num[c(4:13)], scale. = TRUE)
+summary(acp)
+
+```
+Determinación del número de componentes principales a utilizar. Del gráfico se observa que utilizaremos 2 componentes principales. 
+```{r}
+scree(desempleo_num[c(4:13)])
+```
+Procedemos determinar la correlacion entre los valores iniciales y la scores
+```{r}
+options(digits = 4)
+cor(desempleo_num[c(4:13)], acp$x[,1:2])
+
+```
+Procedemos a realizar un ranking de paises, para lo cual utilizaremos los autovalores y vectores propios, que se muestran a continuación.
+
+```{r}
+eigen_val = eigen(cor(desempleo_num[c(4:13)]))
+eigen_val
+ranking = (8.082451348*acp$x[,1] + 1.144797940*acp$x[,2])/(8.082451348+1.144797940)
+
+promedio_1990_1999 = rowMeans(desempleo_num[,4:13])
+desempleo_num = data.frame(desempleo_num,ranking, promedio_1990_1999)
+df_ranking = data.frame(desempleo_num$Country, desempleo_num$ranking, promedio_1990_1999)
+df_ranking
+arrange(df_ranking, desempleo_num.ranking)
+```
+Se procede a realizar un gráfico biplot.
+Se observa en el gráfico bliplot que para los años 1990 hasta 1994, su ubican en el 1er cuadrante del plano cartesiano. Y, para los años 1995 a 1999, se ubican en el 4to cuadrante del plano cartesiano. Lo cual sugiere
+que se dio un punto de quiebre en el desempleo a finales de 1994.
+
+```{r}
+biplot(acp, scale = 0)
+```
+
+Gráfico de los dos primeros componentes por pais
+
+```{r}
+scores = cbind(desempleo_num, acp$x)
+ggplot(scores, aes(x = PC1, y = PC2, label = Country))+
+  geom_label()+
+  geom_vline(xintercept = 0, color = "red")+
+  geom_hline(yintercept = 0, color = "red")
+  
+```
+
+
+gráfico de los dos primeros componentes por ranking
+
+```{r}
+
+ggplot(scores, aes(x = PC1, y = PC2, label = round(ranking,2)))+
+  geom_label()+
+  geom_vline(xintercept = 0, color = "red")+
+  geom_hline(yintercept = 0, color = "red")
+  
+```
+
+Ahora procedemos a realizar el ACP para la siguiente decade del 2000 al 2019. 
+
+```{r}
+df_acp_2000 = subset(desempleo_num[,14:33])
+name_pais = desempleo_num$Country
+df_acp_2000 = data.frame(df_acp_2000, row.names = name_pais)
+```
+
+kmo
+```{r}
+KMO(df_acp_2000[,1:10])
+bartlett.test(df_acp_2000[,1:10])
+```
+
+
+```{r}
+acp_2000 = prcomp(df_acp_2000[,1:10], scale. = TRUE)
+biplot(acp_2000, scale = 0, xlim=c(-10, 10), ylim=c(-3, 3))
+
+
+```
+
+
 3. Analisis de cluster (AC)
 4. Escalamiento multidimensional
 
@@ -25,29 +147,6 @@ Se utilizaran las siguientes técnicas para el analisis.
 ## Discusión
 
 ## Referencias
-```{r}
-mtcars
-library("ggplot2")
-ggplot(mtcars, mapping = aes(mpg, hp))+
-  geom_point()
-```
-
-
-
-```{r,echo=TRUE}
-ggplot(mtcars, mapping = aes(mpg, hp))+
-  geom_point()
-```
-
-```{r, test-plot}
-plot(1)         # high-level plot
-abline(0, 1)    # low-level change
-plot(rnorm(10)) # high-level plot
-# many low-level changes in a loop (a single R expression)
-for(i in 1:10) {
-    abline(v = i, lty = 2)
-}
-```
 
 ## Referencias 
 International Labour Organization. (s. f.). International Labour Organization. https://ilostat.ilo.org. Recuperado 9 de abril de 2021, de https://ilostat.ilo.org/data/
